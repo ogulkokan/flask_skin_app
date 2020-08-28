@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 
-   <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
-   <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
-
-    <link rel="stylesheet" src="static/css/assesment.css" type="text/css">
+  <link rel="stylesheet" src="static/css/assesment.css" type="text/css">
+ <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
   <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
@@ -76,7 +76,7 @@
 </nav>
 <div class="container">
 
-  <form class="well form-horizontal" action="{{ url_for('predict')}}" method="post"  id="contact_form">
+  <form class="well form-horizontal" action=" " method="post"  id="contact_form">
 <fieldset>
 
 <!-- Form Name -->
@@ -84,13 +84,12 @@
 
 <!-- Text input-->
 
-
 <div class="form-group">
 <label class="col-md-4 control-label">Please enter your age</label>  
 <div class="col-md-4 inputGroupContainer">
 <div class="input-group">
 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-<input  name="age" placeholder="Age" class="form-control"  type="text" required="required">
+<input  name="first_name" placeholder="Age" class="form-control"  type="text">
   </div>
 </div>
 </div>
@@ -102,7 +101,7 @@
   <div class="col-md-4 inputGroupContainer">
   <div class="input-group">
 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-<input name="diameter" placeholder="Horizontal Diameter" class="form-control"  type="text" required="required">
+<input name="last_name" placeholder="Horizontal Diameter" class="form-control"  type="text">
   </div>
 </div>
 </div>
@@ -114,7 +113,7 @@
     <div class="col-md-4 inputGroupContainer">
     <div class="input-group">
   <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-  <input name="diamater2" placeholder="Vertical Diameter" class="form-control"  type="text" required="required">
+  <input name="last_name" placeholder="Vertical Diameter" class="form-control"  type="text">
     </div>
   </div>
   </div>
@@ -127,8 +126,8 @@
   <div class="col-md-4 selectContainer">
   <div class="input-group">
       <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-  <select name="gender" class="form-control selectpicker" required="required">
-    <option value="" >Please select your gender</option>
+  <select name="gender" class="form-control selectpicker" >
+    <option value=" " >Please select your gender</option>
     <option value="1">Male</option>
     <option value="0">Female</option>
   </select>
@@ -143,8 +142,8 @@
     <div class="col-md-4 selectContainer">
     <div class="input-group">
         <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="smoke" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
+    <select name="smoke" class="form-control selectpicker" >
+      <option value=" " >Please answer question</option>
       <option value="1">Yes</option>
       <option value="0">No</option>
     </select>
@@ -162,8 +161,8 @@
     <div class="col-md-4 selectContainer">
     <div class="input-group">
         <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="alcohol" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
+    <select name="alcohol" class="form-control selectpicker" >
+      <option value=" " >Please answer question</option>
       <option value="1">Yes</option>
       <option value="0">No</option>
     </select>
@@ -178,8 +177,8 @@
     <div class="col-md-4 selectContainer">
     <div class="input-group">
         <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="cancer1" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
+    <select name="cancer1" class="form-control selectpicker" >
+      <option value=" " >Please answer question</option>
       <option value="1">Yes</option>
       <option value="0">No</option>
     </select>
@@ -194,24 +193,24 @@
         <div class="col-md-4 selectContainer">
         <div class="input-group">
             <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-        <select name="cancer2" class="form-control selectpicker" required="required">
-          <option value="" >Please answer question</option>
+        <select name="cancer2" class="form-control selectpicker" >
+          <option value=" " >Please answer question</option>
           <option value="1">Yes</option>
           <option value="0">No</option>
         </select>
       </div>
       </div>
       </div>
-      
+
       <!-- Select Basic -->
  
       <div class="form-group"> 
-        <label class="col-md-4 control-label">Please choose <a href="https://dermnetnz.org/topics/skin-phototype/">fitspatrick</a>  skin type:</label>
+        <label class="col-md-4 control-label">Please choose fitspatrick skin type:</label>
           <div class="col-md-4 selectContainer">
           <div class="input-group">
               <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-          <select name="fitspatrick" class="form-control selectpicker" required="required">
-            <option value="" >Please choose your skin  type</option>
+          <select name="fitspatrick" class="form-control selectpicker" >
+            <option value=" " >Please choose your skin  type</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -228,8 +227,8 @@
             <div class="col-md-4 selectContainer">
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-            <select name="itching" class="form-control selectpicker" required="required">
-              <option value="" >Please answer question</option>
+            <select name="itching" class="form-control selectpicker" >
+              <option value=" " >Please answer question</option>
               <option value="1">Yes</option>
               <option value="0">No</option>
             </select>
@@ -242,8 +241,8 @@
               <div class="col-md-4 selectContainer">
               <div class="input-group">
                   <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-              <select name="hurting" class="form-control selectpicker" required="required">
-                <option value="" >Please answer question</option>
+              <select name="hurting" class="form-control selectpicker" >
+                <option value=" " >Please answer question</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
@@ -256,8 +255,8 @@
                 <div class="col-md-4 selectContainer">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                <select name="growing" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
+                <select name="growing" class="form-control selectpicker" >
+                  <option value=" " >Please answer question</option>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
@@ -270,8 +269,8 @@
                   <div class="col-md-4 selectContainer">
                   <div class="input-group">
                       <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                  <select name="changing" class="form-control selectpicker" required="required">
-                    <option value="" >Please answer question</option>
+                  <select name="changing" class="form-control selectpicker" >
+                    <option value=" " >Please answer question</option>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
@@ -285,8 +284,8 @@
                     <div class="col-md-4 selectContainer">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                    <select name="bleeding" class="form-control selectpicker" required="required">
-                      <option value="" >Please answer question</option>
+                    <select name="bleeding" class="form-control selectpicker" >
+                      <option value=" " >Please answer question</option>
                       <option value="1">Yes</option>
                       <option value="0">No</option>
                     </select>
@@ -299,15 +298,15 @@
                       <div class="col-md-4 selectContainer">
                       <div class="input-group">
                           <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                      <select name="elevation" class="form-control selectpicker" required="required">
-                        <option value="" >Please answer question</option>
+                      <select name="elevation" class="form-control selectpicker" >
+                        <option value=" " >Please answer question</option>
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                       </select>
                     </div>
                     </div>
                     </div>
-                   <!-- <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>-->
+
                     
 <!-- radio checks 
 <div class="form-group">
@@ -334,7 +333,7 @@
 <div class="form-group">
 <label class="col-md-4 control-label"></label>
 <div class="col-md-4">
-  <button type="submit" class="btn btn-warning" >Bring Results <span></span></button>
+  <button type="submit" class="btn btn-warning" >Bring Result <span class="glyphicon glyphicon-send"></span></button>
 </div>
 </div>
 
@@ -343,6 +342,6 @@
 </div>
   </div><!-- /.container -->
 
-<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/assesment.js') }}"></script>-->
+<!--<script type="text/javascript" src="{{ url_for('static', filename='js/assesment.js') }}"></script>-->
 </body>
 </html>
