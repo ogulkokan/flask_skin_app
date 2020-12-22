@@ -13,6 +13,8 @@
   <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
 
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet"> 
+
   <style>
     /* Remove the navbar's default margin-bottom and rounded borders */ 
     .navbar {
@@ -61,11 +63,13 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li><a href="/about">About</a></li>
+        <li><a href="/image">Image</a></li>
+        <li><a href="/final">Final</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li class="active"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </div>
