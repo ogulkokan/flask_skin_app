@@ -1,5 +1,5 @@
 import numpy as np
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, flash
 import pickle
 import os
 
@@ -14,20 +14,179 @@ from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 import tensorflow_hub as hub
 
+import sys
+
+from config import *
+
+import pandas as pd
+from sklearn.preprocessing import PowerTransformer
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import LabelEncoder
+
+
+
 app = Flask(__name__)
-model = pickle.load(open('./models/model.pkl', 'rb'))
+app.secret_key = os.urandom(24)
 
+# load models
 module = hub.KerasLayer("./models/bit_s-r50x1_1")
+svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
+rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
 
-print('Hub is ready')
+# load image feature dataset
+base_dir = './models/'
+features_PAD = pd.read_csv(os.path.join(base_dir, 'feature_last.csv'), index_col=0)
+df_meta = pd.read_csv(os.path.join(base_dir, 'meta_last.csv'), index_col=0)
 
-#module = hub.KerasLayer("https://tfhub.dev/google/bit/s-r50x1/1")
-#images = ...  # A batch of images with shape [batch_size, height, width, 3].
-#features = module(images)  # Features with shape [batch_size, 2048].
+training_features = features_PAD.drop(['labels','diagnostic', 'type'],axis=1)
+encoded_clinical_meta = df_meta.drop(['diagnostic', 'type'],axis=1)
+
+
+target_multiple = features_PAD['diagnostic'].values
+target_binary = features_PAD['type'].values
 
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+def index():
+    if request.method == 'POST':
+
+        #print(request.form.get('age'))    ## this one check if age exist and return none if empyt
+        print(request.form['diameter'])
+        if 'file' not in request.files:
+            print('Not a valid Code', file=sys.stderr)
+            return render_template('index.html', msg='No file selected')
+
+        else:
+            f = request.files['file']
+
+            # Save the file to ./uploads
+            basepath = os.path.dirname(__file__)
+            file_path = os.path.join(
+                basepath, 'uploads', secure_filename(f.filename))
+            f.save(file_path)
+            print('model saved to uploads file')
+
+
+            ##------------For image feature extraction test------------------#
+            original_image = load_img(file_path, target_size=(224, 224))
+            numpy_image = img_to_array(original_image)
+
+            print(numpy_image.shape)
+            image_batch = np.expand_dims(numpy_image, axis=0)
+
+            #images = ...  # A batch of images with shape [batch_size, height, width, 3].
+            features = module(image_batch)  # Features with shape [batch_size, 2048]. 
+            print(features)
+            ##------------For image feature extraction test END------------------#
+
+            ##------------Get Clinical Informations------------------#
+            age = request.form['age']
+            gender = request.form['gender']
+            h_diameter = request.form['diameter'] # horizontal diameter
+            v_diameter = request.form['diamater2'] # vertical diameter
+            smoke = request.form['smoke']
+            alcohol = request.form['alcohol']
+            cancer1 = request.form['cancer1'] # Skin cancer history
+            cancer2 = request.form['cancer2'] # Cancer history
+            fitspatrick = request.form['fitspatrick']
+            itching = request.form['itching']
+            hurting = request.form['hurting']
+            growing = request.form['growing']
+            changing = request.form['changing']
+            bleeding = request.form['bleeding']
+            elevation = request.form['elevation']
+
+
+            int_features = [age, gender, h_diameter, v_diameter, smoke, alcohol, cancer1, cancer2, fitspatrick,
+                            itching, hurting, growing, changing, bleeding, elevation]
+            final_features = [np.array(int_features)]
+            #prediction = model.predict(final_features)
+            print(final_features)
+            prediction = rf_model.predict(final_features)
+
+            print('############---------------------------#######################')
+            print('Clinical feature prediction')
+            print(prediction)
+            print('############---------------------------#######################')
+
+
+            ##------------Get Clinical Informations END------------------#
+            
+            image_features = features
+            
+            # scale image features
+            yj = PowerTransformer(method = 'yeo-johnson')
+            X_train_feature_yj = yj.fit_transform(training_features)
+
+            # apply PCA
+            pca = PCA(433)
+
+            print('############----DENEME--------#######################')
+            
+            print(X_train_feature_yj.shape)
+            X_train_feature_yj_pca = pca.fit_transform(X_train_feature_yj)
+            X_train_feature_yj_pca_fusion = np.concatenate((X_train_feature_yj_pca, encoded_clinical_meta), axis=1)
+
+            X_test_feature_yj = yj.transform(image_features)
+            X_test_feature_yj_pca = pca.transform(X_test_feature_yj)
+            #print(X_test_feature_yj_pca.shape)
+
+            X_test_feature_yj_pca_fusion = np.concatenate((X_test_feature_yj_pca, final_features), axis=1)
+            prediction_svm = svm_model.predict(X_test_feature_yj_pca_fusion)
+            print(X_test_feature_yj_pca_fusion.shape)
+            print('svm_prediction', prediction_svm)
+
+            print('############----DENEME--------#######################')
+
+
+            print('############---------------------------#######################')
+            print('SOFT VOTING TEST')
+
+            def fit_multiple_estimators(classifiers, X_list, y, sample_weights = None):
+
+                # Convert the labels `y` using LabelEncoder, because the predict method is using index-based pointers
+                # which will be converted back to original data later.
+                #le_ = LabelEncoder()
+                #le_.fit(y)
+                #transformed_y = le_.transform(y)
+                
+                
+                # Fit all estimators with their respective feature arrays
+                estimators_ = [clf.fit(X, y) if sample_weights is None else clf.fit(X, y, sample_weights) for clf, X, y in zip([clf for _, clf in classifiers], X_list, y)]
+
+                return estimators_
+
+
+            def predict_from_multiple_estimator(estimators, X_list, weights = None):
+
+                # Predict 'soft' voting with probabilities
+
+                pred1 = np.asarray([clf.predict_proba(X) for clf, X in zip(estimators, X_list)])
+                pred2 = np.average(pred1, axis=0, weights=weights)
+                pred = np.argmax(pred2, axis=1)
+
+                # Convert integer predictions to original labels:
+                return pred, pred2     #label_encoder.inverse_transform(pred)
+
+            X_train_list = [X_train_feature_yj_pca_fusion, encoded_clinical_meta]
+            y_list = [target_multiple, target_multiple]
+
+            X_test_list = [X_test_feature_yj_pca_fusion, final_features]
+
+            # Make sure the number of estimators here are equal to number of different feature datas
+            classifiers = [('svc',  svm_model), ('rf', rf_model)]
+
+            fitted_estimators = fit_multiple_estimators(classifiers, X_train_list, y_list, sample_weights=None)
+            y_pred, y_pred_proba = predict_from_multiple_estimator(fitted_estimators, X_test_list)
+            print(y_pred, y_pred_proba)
+            print('############---------------------------#######################')
+
+
+            ##--------her sey bittikten sonra fotoyu kaldir ------------###
+            print('Deleting File at Path: ' + file_path)
+            os.remove(file_path)
+            print('Deleting File at Path - Success - ')
+
     return render_template('index.html')
 
 
@@ -35,87 +194,9 @@ def home():
 def about():
     return render_template('about.html')
 
-@app.route('/image')
-def image():
-    return render_template('image.html')
-
-@app.route('/final')
-def final():
-    return render_template('final.html')
-
 @app.route('/login')
 def login():
     return render_template('login.html')
-
-@app.route('/predict',methods=['GET','POST'])
-def predict():
-    """    disease= 0, cancer= 1
-    class 0, 3, and 5 is disease
-    class 1, 2, and 4 is cancer
-    """
-
-    ##------------For image upload test------------------#
-    f = request.files['image']
-
-    # Save the file to ./uploads
-    basepath = os.path.dirname(__file__)
-    file_path = os.path.join(
-        basepath, 'uploads', secure_filename(f.filename))
-    f.save(file_path)
-    print('model saved to uploads file')
-    ##------- for image upload test END-------------------#
-
-
-    ##------------For image feature extraction test------------------#
-    original_image = load_img(file_path, target_size=(224, 224))
-    numpy_image = img_to_array(original_image)
-
-    print(numpy_image.shape)
-    image_batch = np.expand_dims(numpy_image, axis=0)
-
-    #images = ...  # A batch of images with shape [batch_size, height, width, 3].
-    features = module(image_batch)  # Features with shape [batch_size, 2048]. 
-    print(features)
-
-
-
-    ##------------For image feature extraction test END------------------#
-
-
-
-    
-    int_features = [int(x) for x in request.form.values()]
-    final_features = [np.array(int_features)]
-    prediction = model.predict(final_features)
-
-    #print(prediction)
-    #prediction = model.predict(final_features)
-
-    output = round(prediction[0])
-
-    if output is 0 or output is 3 or output is 5:
-        output2 = 'Low Risk Lesion'
-    else:
-        output2 = 'High Risk Lesion'
-
-
-    ##--------her sey bittikten sonra fotoyu kaldir ------------###
-    #print('Deleting File at Path: ' + file_path)
-    #os.remove(file_path)
-    #print('Deleting File at Path - Success - ')
-
-    return print('YEAAAAAAAAAAA')
-    #return render_template('results.html', prediction_text2=output2)
-
-
-@app.route('/results',methods=['GET','POST'])
-def results():
-
-    data = request.get_json(force=True)
-    prediction = model.predict([np.array(list(data.values()))])
-
-    output = prediction[0]
-    return jsonify(output)
 
 if __name__ == "__main__":
     app.run(debug=True)
