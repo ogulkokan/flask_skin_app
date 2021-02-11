@@ -1,348 +1,206 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'layout.html' %}
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+{% block head %}
 
-   <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
-   <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
+<script src="{{ url_for('static', filename='js/main.js') }}" type="text/javascript"></script>
 
-    <link rel="stylesheet" src="static/css/assesment.css" type="text/css">
-  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/assesment.css') }}">
-
-  <style>
-    /* Remove the navbar's default margin-bottom and rounded borders */ 
-    .navbar {
-      margin-bottom: 0;
-      border-radius: 0;
-    }
-    
-    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-    .row.content {height: 450px}
-    
-    /* Set gray background color and 100% height */
-    .sidenav {
-      padding-top: 20px;
-      background-color: #f1f1f1;
-      height: 100%;
-    }
-    
-    /* Set black background color, white text and some padding */
-    footer {
-      background-color: #555;
-      color: white;
-      padding: 15px;
-    }
-    
-    /* On small screens, set height to 'auto' for sidenav and grid */
-    @media screen and (max-width: 767px) {
-      .sidenav {
-        height: auto;
-        padding: 15px;
-      }
-      .row.content {height:auto;} 
-    }
-  </style>
-</head>
-<body>
-
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="https://gradient0.com/#/">Gradient Zero</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="/">Home</a></li>
-        <li><a href="/about">About</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<div class="container">
-
-  <form class="well form-horizontal" action="{{ url_for('predict')}}" method="post"  id="contact_form">
-<fieldset>
-
-<!-- Form Name -->
-<legend>Skin Lesion Risk Assesment  {{ prediction_text }}</legend>
-
-<!-- Text input-->
-
-
-<div class="form-group">
-<label class="col-md-4 control-label">Please enter your age</label>  
-<div class="col-md-4 inputGroupContainer">
-<div class="input-group">
-<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-<input  name="age" placeholder="Age" class="form-control"  type="text" required="required">
-  </div>
-</div>
-</div>
-
-<!-- Text input-->
-
-<div class="form-group">
-<label class="col-md-4 control-label" >Horizontal diameter of lesion (cm)</label> 
-  <div class="col-md-4 inputGroupContainer">
-  <div class="input-group">
-<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-<input name="diameter" placeholder="Horizontal Diameter" class="form-control"  type="text" required="required">
-  </div>
-</div>
-</div>
-
-<!-- Text input-->
-
-<div class="form-group">
-  <label class="col-md-4 control-label" >Vertical diameter of lesion (cm)</label> 
-    <div class="col-md-4 inputGroupContainer">
-    <div class="input-group">
-  <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-  <input name="diamater2" placeholder="Vertical Diameter" class="form-control"  type="text" required="required">
-    </div>
-  </div>
-  </div>
-
-
-<!-- Select Basic -->
- 
-<div class="form-group"> 
-<label class="col-md-4 control-label">Gender</label>
-  <div class="col-md-4 selectContainer">
-  <div class="input-group">
-      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-  <select name="gender" class="form-control selectpicker" required="required">
-    <option value="" >Please select your gender</option>
-    <option value="1">Male</option>
-    <option value="0">Female</option>
-  </select>
-</div>
-</div>
-</div>
-
-<!-- Select Basic -->
- 
-<div class="form-group"> 
-  <label class="col-md-4 control-label">Do you smoke?</label>
-    <div class="col-md-4 selectContainer">
-    <div class="input-group">
-        <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="smoke" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
-      <option value="1">Yes</option>
-      <option value="0">No</option>
-    </select>
-  </div>
-  </div>
-  </div>
+{% endblock %}
 
 
 
 
-  <!-- Select Basic -->
- 
-<div class="form-group"> 
-  <label class="col-md-4 control-label">Do you drink alcohol??</label>
-    <div class="col-md-4 selectContainer">
-    <div class="input-group">
-        <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="alcohol" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
-      <option value="1">Yes</option>
-      <option value="0">No</option>
-    </select>
-  </div>
-  </div>
-  </div>
+{% block body %}
 
-    <!-- Select Basic -->
- 
-<div class="form-group"> 
-  <label class="col-md-4 control-label">Do you have skin cancer history?</label>
-    <div class="col-md-4 selectContainer">
-    <div class="input-group">
-        <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-    <select name="cancer1" class="form-control selectpicker" required="required">
-      <option value="" >Please answer question</option>
-      <option value="1">Yes</option>
-      <option value="0">No</option>
-    </select>
-  </div>
-  </div>
-  </div>
+<div class="container-fluid">
+  <div class="div-center">
 
-    <!-- Select Basic -->
- 
-    <div class="form-group"> 
-      <label class="col-md-4 control-label">Do you have cancer history?</label>
-        <div class="col-md-4 selectContainer">
-        <div class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-        <select name="cancer2" class="form-control selectpicker" required="required">
-          <option value="" >Please answer question</option>
-          <option value="1">Yes</option>
-          <option value="0">No</option>
-        </select>
-      </div>
-      </div>
-      </div>
-      
-      <!-- Select Basic -->
- 
-      <div class="form-group"> 
-        <label class="col-md-4 control-label">Please choose <a href="https://dermnetnz.org/topics/skin-phototype/">fitspatrick</a>  skin type:</label>
-          <div class="col-md-4 selectContainer">
-          <div class="input-group">
-              <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-          <select name="fitspatrick" class="form-control selectpicker" required="required">
-            <option value="" >Please choose your skin  type</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </div>
-        </div>
-        </div>
 
-        <div class="form-group"> 
-          <label class="col-md-4 control-label">Is lesion itching?</label>
-            <div class="col-md-4 selectContainer">
-            <div class="input-group">
-                <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-            <select name="itching" class="form-control selectpicker" required="required">
-              <option value="" >Please answer question</option>
-              <option value="1">Yes</option>
-              <option value="0">No</option>
-            </select>
-          </div>
-          </div>
-          </div>
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+            <label for="imageUpload" class="upload-label">Choose a photo...</label>
 
+
+            <input type="file" name="file" class="form-control" id="imageUpload" accept=".png, .jpg, .jpeg" required="required" onchange="showMyImage(this)">
+            <img id="thumbnil" style="width:100%; max-width: 200px; margin:10px 0; display:none;"  src="" alt="logo"/>
+
+
+
+
+            <div class="form-group">
+              <label class="col-md-4 control-label">Please enter your age</label> 
+              <input  name="age" placeholder="Age" class="form-control"  type="text" required="required">
+            </div>
+
+            <div class="form-group">
+              <label class="col-md-4 control-label">Horizontal diameter of lesion (mm)</label> 
+              <input name="diameter" placeholder="Horizontal Diameter" class="form-control"  type="text" required="required">
+            </div>
+
+
+            <div class="form-group">
+              <label class="col-md-4 control-label" >Vertical diameter of lesion (cm)</label> 
+              <input name="diamater2" placeholder="Vertical Diameter" class="form-control"  type="text" required="required">
+            </div>
+
+
+
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Gender</label>
+                <select name="gender" class="form-control selectpicker" required="required">
+                  <option value="" >Please select your gender</option>
+                  <option value="1">Male</option>
+                  <option value="0">Female</option>
+                </select>
+              </div>
+
+          
+          <!-- Select Basic --> 
           <div class="form-group"> 
-            <label class="col-md-4 control-label">Is lesion hurting?</label>
-              <div class="col-md-4 selectContainer">
-              <div class="input-group">
-                  <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-              <select name="hurting" class="form-control selectpicker" required="required">
+            <label class="col-md-4 control-label">Do you smoke?</label>
+              <select name="smoke" class="form-control selectpicker" required="required">
                 <option value="" >Please answer question</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
             </div>
-            </div>
+
+
+          <!-- Drink Alcohol -->
+          <div class="form-group"> 
+            <label class="col-md-4 control-label">Do you drink alcohol??</label>
+              <select name="alcohol" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
             </div>
 
+
+            <!-- Skin Cancer History -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Do you have skin cancer history?</label>
+                <select name="cancer1" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+
+
+           <!-- Cancer History -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Do you have cancer history?</label>
+                <select name="cancer2" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+
+
+            <!-- Fitspatrick Skin Type -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Please choose <a href="https://dermnetnz.org/topics/skin-phototype/">fitspatrick</a>  skin type:</label>
+                <select name="fitspatrick" class="form-control selectpicker" required="required">
+                  <option value="" >Please choose your skin  type</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+
+
+            <!-- Itching  -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Is lesion itching?</label>
+                <select name="itching" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+
+
+            <!-- Hurting  -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Is lesion hurting?</label>
+                <select name="hurting" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
+
+            <!-- Growing  -->
             <div class="form-group"> 
               <label class="col-md-4 control-label">Is lesion growing?</label>
-                <div class="col-md-4 selectContainer">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
                 <select name="growing" class="form-control selectpicker" required="required">
                   <option value="" >Please answer question</option>
                   <option value="1">Yes</option>
                   <option value="0">No</option>
                 </select>
               </div>
+
+
+            <!-- Changing  -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Is lesion changing?</label>
+                <select name="changing" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
               </div>
+
+            <!-- Bleeding  -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Is lesion bleeding?</label>
+                <select name="bleeding" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
               </div>
 
-              <div class="form-group"> 
-                <label class="col-md-4 control-label">Is lesion changing?</label>
-                  <div class="col-md-4 selectContainer">
-                  <div class="input-group">
-                      <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                  <select name="changing" class="form-control selectpicker" required="required">
-                    <option value="" >Please answer question</option>
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                </div>
-                </div>
-                </div>
+            <!-- Elevation  -->
+            <div class="form-group"> 
+              <label class="col-md-4 control-label">Is there elevation?</label>
+                <select name="elevation" class="form-control selectpicker" required="required">
+                  <option value="" >Please answer question</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+              </div>
 
 
-                <div class="form-group"> 
-                  <label class="col-md-4 control-label">Is lesion bleeding?</label>
-                    <div class="col-md-4 selectContainer">
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                    <select name="bleeding" class="form-control selectpicker" required="required">
-                      <option value="" >Please answer question</option>
-                      <option value="1">Yes</option>
-                      <option value="0">No</option>
-                    </select>
-                  </div>
-                  </div>
-                  </div>
 
-                  <div class="form-group"> 
-                    <label class="col-md-4 control-label">Is there elevation?</label>
-                      <div class="col-md-4 selectContainer">
-                      <div class="input-group">
-                          <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
-                      <select name="elevation" class="form-control selectpicker" required="required">
-                        <option value="" >Please answer question</option>
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                      </select>
-                    </div>
-                    </div>
-                    </div>
-                   <!-- <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>-->
-                    
-<!-- radio checks 
-<div class="form-group">
-                      <label class="col-md-4 control-label">Do you have hosting?</label>
-                      <div class="col-md-4">
-                          <div class="radio">
-                              <label>
-                                  <input type="radio" name="hosting" value="yes" /> Yes
-                              </label>
-                          </div>
-                          <div class="radio">
-                              <label>
-                                  <input type="radio" name="hosting" value="no" /> No
-                              </label>
-                          </div>
-                      </div>
-                  </div>
--->
-{{ prediction_text }}
-<!-- Success message -->
-<div class="alert alert-success" role="alert" id="success_message">{{ prediction_text }} <i class="glyphicon glyphicon-thumbs-up"></i> Thanks for contacting us, we will get back to you shortly.</div>
 
-<!-- Button -->
-<div class="form-group">
-<label class="col-md-4 control-label"></label>
-<div class="col-md-4">
-  <button type="submit" class="btn btn-warning" >Bring Results <span></span></button>
-</div>
+            <!-- Submit Button -->
+            <div class="form-group">
+              <label class="col-md-4 control-label"></label>
+              <div class="col-md-4">
+                <button name="file" type="submit" value="Submit" class="btn btn-warning" id="btn-predict">Bring Results <span></span></button>
+              </div>
+
+
+        </form>
+  
+  
+        
+        
+            <h3 id="result">
+                <span> </span>
+            </h3>
+          
+  </div>
+
+
+
 </div>
 
-</fieldset>
-</form>
-</div>
-  </div><!-- /.container -->
 
-<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/assesment.js') }}"></script>-->
-</body>
-</html>
+
+
+{% endblock %}
