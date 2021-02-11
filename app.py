@@ -182,10 +182,39 @@ def index():
             print('############---------------------------#######################')
 
 
-            ##--------her sey bittikten sonra fotoyu kaldir ------------###
+            """    disease= 0, cancer= 1
+            class 0, 3, and 5 is disease
+            class 1, 2, and 4 is cancer
+            """
+            if y_pred == 0 or 3 or 5:
+                prediction = "Safe"
+                color = "green"
+                statement = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer efficitur velit eget tellus pharetra congue. \
+                Sed pellentesque, est id porta lacinia, orci metus iaculis nibh, sit amet auctor eros tellus sit amet sapien. Pellentesque lacus \
+                augue, vestibulum varius posuere at congue vel felis. Pellentesque non justo vel elit luctus sollicitudin. Curabitur eu porttitor \
+                odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ullamcorper lacus ac \
+                libero ultrices, non blandit ipsum vehicula. Suspendisse ultrices congue urna, nec finibus metus. Nullam ex ligula" 
+
+            else:
+                prediction = "Dangerous"
+                color = "red"
+                statement = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer efficitur velit eget tellus pharetra congue. \
+                Sed pellentesque, est id porta lacinia, orci metus iaculis nibh, sit amet auctor eros tellus sit amet sapien. Pellentesque lacus \
+                augue, vestibulum varius posuere at congue vel felis. Pellentesque non justo vel elit luctus sollicitudin. Curabitur eu porttitor \
+                odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ullamcorper lacus ac \
+                libero ultrices, non blandit ipsum vehicula. Suspendisse ultrices congue urna, nec finibus metus. Nullam ex ligula" 
+
+            
+            # Remove uploaded image after prediction
             print('Deleting File at Path: ' + file_path)
             os.remove(file_path)
             print('Deleting File at Path - Success - ')
+
+
+            return render_template('results.html', result = [y_pred, y_pred_proba, prediction, statement, color])
+
+
+
 
     return render_template('index.html')
 
@@ -193,6 +222,10 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/results')
+def results():
+    return render_template('results.html')
 
 @app.route('/login')
 def login():
