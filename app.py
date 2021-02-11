@@ -21,7 +21,6 @@ from config import *
 import pandas as pd
 from sklearn.preprocessing import PowerTransformer
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import LabelEncoder
 
 
 
@@ -29,9 +28,9 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # load models
-module = hub.KerasLayer("./models/bit_s-r50x1_1")
-svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
-rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
+
+
+
 
 # load image feature dataset
 base_dir = './models/'
@@ -75,6 +74,7 @@ def index():
             image_batch = np.expand_dims(numpy_image, axis=0)
 
             #images = ...  # A batch of images with shape [batch_size, height, width, 3].
+            module = hub.KerasLayer("./models/bit_s-r50x1_1")
             features = module(image_batch)  # Features with shape [batch_size, 2048]. 
             print(features)
             ##------------For image feature extraction test END------------------#
@@ -102,6 +102,8 @@ def index():
             final_features = [np.array(int_features)]
             #prediction = model.predict(final_features)
             print(final_features)
+            # load model
+            rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
             prediction = rf_model.predict(final_features)
 
             print('############---------------------------#######################')
@@ -132,6 +134,8 @@ def index():
             #print(X_test_feature_yj_pca.shape)
 
             X_test_feature_yj_pca_fusion = np.concatenate((X_test_feature_yj_pca, final_features), axis=1)
+            # load model
+            svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
             prediction_svm = svm_model.predict(X_test_feature_yj_pca_fusion)
             print(X_test_feature_yj_pca_fusion.shape)
             print('svm_prediction', prediction_svm)
