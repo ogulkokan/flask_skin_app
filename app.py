@@ -30,8 +30,6 @@ app.secret_key = os.urandom(24)
 # load models
 
 
-
-
 # load image feature dataset
 base_dir = './models/'
 features_PAD = pd.read_csv(os.path.join(base_dir, 'feature_last.csv'), index_col=0)
@@ -66,7 +64,7 @@ def index():
             print('model saved to uploads file')
 
 
-            ##------------For image feature extraction test------------------#
+            # load image and resize to 224 x 224
             original_image = load_img(file_path, target_size=(224, 224))
             numpy_image = img_to_array(original_image)
 
@@ -77,9 +75,9 @@ def index():
             module = hub.KerasLayer("./models/bit_s-r50x1_1")
             features = module(image_batch)  # Features with shape [batch_size, 2048]. 
             print(features)
-            ##------------For image feature extraction test END------------------#
 
-            ##------------Get Clinical Informations------------------#
+
+            # Get Clinical informations from the user
             age = request.form['age']
             gender = request.form['gender']
             h_diameter = request.form['diameter'] # horizontal diameter
@@ -100,60 +98,44 @@ def index():
             int_features = [age, gender, h_diameter, v_diameter, smoke, alcohol, cancer1, cancer2, fitspatrick,
                             itching, hurting, growing, changing, bleeding, elevation]
             final_features = [np.array(int_features)]
-            #prediction = model.predict(final_features)
-            print(final_features)
-            # load model
+
+            # load Random Forest model and make prediction
             rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
             prediction = rf_model.predict(final_features)
 
-            print('############---------------------------#######################')
-            print('Clinical feature prediction')
-            print(prediction)
-            print('############---------------------------#######################')
-
-
-            ##------------Get Clinical Informations END------------------#
-            
+           
             image_features = features
-            
+    
             # scale image features
             yj = PowerTransformer(method = 'yeo-johnson')
             X_train_feature_yj = yj.fit_transform(training_features)
 
             # apply PCA
             pca = PCA(433)
-
-            print('############----DENEME--------#######################')
             
-            print(X_train_feature_yj.shape)
+            # Concat image features and clinical features 
             X_train_feature_yj_pca = pca.fit_transform(X_train_feature_yj)
             X_train_feature_yj_pca_fusion = np.concatenate((X_train_feature_yj_pca, encoded_clinical_meta), axis=1)
 
             X_test_feature_yj = yj.transform(image_features)
             X_test_feature_yj_pca = pca.transform(X_test_feature_yj)
-            #print(X_test_feature_yj_pca.shape)
-
             X_test_feature_yj_pca_fusion = np.concatenate((X_test_feature_yj_pca, final_features), axis=1)
-            # load model
+
+            # load svm model and predict results
             svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
             prediction_svm = svm_model.predict(X_test_feature_yj_pca_fusion)
             print(X_test_feature_yj_pca_fusion.shape)
             print('svm_prediction', prediction_svm)
 
-            print('############----DENEME--------#######################')
-
-
-            print('############---------------------------#######################')
-            print('SOFT VOTING TEST')
+            
+            # Ensemble method Soft voting
 
             def fit_multiple_estimators(classifiers, X_list, y, sample_weights = None):
-
                 # Convert the labels `y` using LabelEncoder, because the predict method is using index-based pointers
                 # which will be converted back to original data later.
                 #le_ = LabelEncoder()
                 #le_.fit(y)
                 #transformed_y = le_.transform(y)
-                
                 
                 # Fit all estimators with their respective feature arrays
                 estimators_ = [clf.fit(X, y) if sample_weights is None else clf.fit(X, y, sample_weights) for clf, X, y in zip([clf for _, clf in classifiers], X_list, y)]
@@ -180,10 +162,11 @@ def index():
             # Make sure the number of estimators here are equal to number of different feature datas
             classifiers = [('svc',  svm_model), ('rf', rf_model)]
 
+            # Get final prediction
             fitted_estimators = fit_multiple_estimators(classifiers, X_train_list, y_list, sample_weights=None)
             y_pred, y_pred_proba = predict_from_multiple_estimator(fitted_estimators, X_test_list)
             print(y_pred, y_pred_proba)
-            print('############---------------------------#######################')
+
 
 
             """    disease= 0, cancer= 1
@@ -216,8 +199,6 @@ def index():
 
 
             return render_template('results.html', result = [y_pred, y_pred_proba, prediction, statement, color])
-
-
 
 
     return render_template('index.html')
