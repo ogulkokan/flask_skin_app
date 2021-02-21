@@ -28,6 +28,9 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # load models
+module = hub.KerasLayer("./models/bit_s-r50x1_1")
+rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
+svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
 
 
 # load image feature dataset
@@ -72,7 +75,7 @@ def index():
             image_batch = np.expand_dims(numpy_image, axis=0)
 
             #images = ...  # A batch of images with shape [batch_size, height, width, 3].
-            module = hub.KerasLayer("./models/bit_s-r50x1_1")
+            #module = hub.KerasLayer("./models/bit_s-r50x1_1")
             features = module(image_batch)  # Features with shape [batch_size, 2048]. 
             print(features)
 
@@ -100,7 +103,7 @@ def index():
             final_features = [np.array(int_features)]
 
             # load Random Forest model and make prediction
-            rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
+            # rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
             prediction = rf_model.predict(final_features)
 
            
@@ -122,7 +125,7 @@ def index():
             X_test_feature_yj_pca_fusion = np.concatenate((X_test_feature_yj_pca, final_features), axis=1)
 
             # load svm model and predict results
-            svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
+            #svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
             prediction_svm = svm_model.predict(X_test_feature_yj_pca_fusion)
             print(X_test_feature_yj_pca_fusion.shape)
             print('svm_prediction', prediction_svm)

@@ -12,179 +12,239 @@
 {% block body %}
 
 <div class="container-fluid">
-  <div class="div-center">
+  <div class="px-2">
 
 
-        <form id="upload-file" method="post" enctype="multipart/form-data">
-            <label for="imageUpload" class="upload-label">Choose a photo...</label>
+        <form class="well form-horizontal" id="upload-file" method="post" enctype="multipart/form-data">
+          <fieldset>
+          <label for="imageUpload" class="upload-label">Choose a photo...</label>
 
 
-            <input type="file" name="file" class="form-control" id="imageUpload" accept=".png, .jpg, .jpeg" required="required" onchange="showMyImage(this)">
-            <img id="thumbnil" style="width:100%; max-width: 200px; margin:10px 0; display:none;"  src="" alt="logo"/>
-
-
-
-
-            <div class="form-group">
-              <label class="col-md-4 control-label">Please enter your age</label> 
-              <input  name="age" placeholder="Age" class="form-control"  type="text" required="required">
-            </div>
-
-            <div class="form-group">
-              <label class="col-md-4 control-label">Horizontal diameter of lesion (mm)</label> 
-              <input name="diameter" placeholder="Horizontal Diameter" class="form-control"  type="text" required="required">
-            </div>
-
-
-            <div class="form-group">
-              <label class="col-md-4 control-label" >Vertical diameter of lesion (cm)</label> 
-              <input name="diamater2" placeholder="Vertical Diameter" class="form-control"  type="text" required="required">
-            </div>
+          <input type="file" name="file" class="form-control" id="imageUpload" accept=".png, .jpg, .jpeg" required="required" onchange="showMyImage(this)">
+          <img id="thumbnil" style="width:100%; max-width: 200px; margin:10px 0; display:none;"  src="" alt="logo"/>
 
 
 
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Gender</label>
-                <select name="gender" class="form-control selectpicker" required="required">
-                  <option value="" >Please select your gender</option>
-                  <option value="1">Male</option>
-                  <option value="0">Female</option>
-                </select>
+          <!-- Age --> 
+          <div class="form-group">
+
+            <label class="col-md-5 control-label">Please enter your age</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+            <input  name="age" placeholder="Age" class="form-control"  type="text" required="required">
               </div>
+            </div>
+            </div>
+
+          <!-- Horizontal diameter --> 
+          <div class="form-group">
+            <label class="col-md-5 control-label">Horizontal diameter of lesion (mm)</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+            <input name="diameter" placeholder="Horizontal Diameter" class="form-control"  type="text" required="required">
+          </div>
+        </div>
+      </div>
+
+          <!-- Vertical diameter --> 
+          <div class="form-group">
+            <label class="col-md-5 control-label" >Vertical diameter of lesion (cm)</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+            <input name="diamater2" placeholder="Vertical Diameter" class="form-control"  type="text" required="required">
+          </div>
+        </div>
+      </div>
+
+
+          <!-- Vertical diameter --> 
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Gender</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="gender" class="form-control selectpicker" required="required">
+                <option value="" >Please select your gender</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
           
-          <!-- Select Basic --> 
+          <!-- Smoke --> 
           <div class="form-group"> 
-            <label class="col-md-4 control-label">Do you smoke?</label>
+            <label class="col-md-5 control-label">Do you smoke?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
               <select name="smoke" class="form-control selectpicker" required="required">
                 <option value="" >Please answer question</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
             </div>
+          </div>
+        </div>
 
 
           <!-- Drink Alcohol -->
           <div class="form-group"> 
-            <label class="col-md-4 control-label">Do you drink alcohol??</label>
+            <label class="col-md-5 control-label">Do you drink alcohol??</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
               <select name="alcohol" class="form-control selectpicker" required="required">
                 <option value="" >Please answer question</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </select>
             </div>
+          </div>
+        </div>
 
 
-            <!-- Skin Cancer History -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Do you have skin cancer history?</label>
-                <select name="cancer1" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
+          <!-- Skin Cancer History -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Do you have skin cancer history?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="cancer1" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
 
-           <!-- Cancer History -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Do you have cancer history?</label>
-                <select name="cancer2" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
+          <!-- Cancer History -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Do you have cancer history?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="cancer2" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
 
-            <!-- Fitspatrick Skin Type -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Please choose <a href="https://dermnetnz.org/topics/skin-phototype/">fitspatrick</a>  skin type:</label>
-                <select name="fitspatrick" class="form-control selectpicker" required="required">
-                  <option value="" >Please choose your skin  type</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                </select>
-              </div>
+          <!-- Fitspatrick Skin Type -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Please choose <a href="https://dermnetnz.org/topics/skin-phototype/">fitspatrick</a>  skin type:</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="fitspatrick" class="form-control selectpicker" required="required">
+                <option value="" >Please choose your skin  type</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
 
-            <!-- Itching  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is lesion itching?</label>
-                <select name="itching" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
+          <!-- Itching  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is lesion itching?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="itching" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
 
-            <!-- Hurting  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is lesion hurting?</label>
-                <select name="hurting" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
+          <!-- Hurting  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is lesion hurting?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="hurting" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-            <!-- Growing  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is lesion growing?</label>
-                <select name="growing" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
-
-
-            <!-- Changing  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is lesion changing?</label>
-                <select name="changing" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
-
-            <!-- Bleeding  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is lesion bleeding?</label>
-                <select name="bleeding" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
-
-            <!-- Elevation  -->
-            <div class="form-group"> 
-              <label class="col-md-4 control-label">Is there elevation?</label>
-                <select name="elevation" class="form-control selectpicker" required="required">
-                  <option value="" >Please answer question</option>
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
-                </select>
-              </div>
+          <!-- Growing  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is lesion growing?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="growing" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
 
+          <!-- Changing  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is lesion changing?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="changing" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
+          <!-- Bleeding  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is lesion bleeding?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="bleeding" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-            <!-- Submit Button -->
-            <div class="form-group">
-              <label class="col-md-4 control-label"></label>
-              <div class="col-md-4">
-                <button name="file" type="submit" value="Submit" class="btn btn-warning" id="btn-predict">Bring Results <span></span></button>
-              </div>
+          <!-- Elevation  -->
+          <div class="form-group"> 
+            <label class="col-md-5 control-label">Is there elevation?</label>
+            <div class="col-md-5 inputGroupContainer">
+              <div class="input-group">
+              <select name="elevation" class="form-control selectpicker" required="required">
+                <option value="" >Please answer question</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
+          <!-- Submit Button -->
+          <div class="form-group">
+            <label class="col-md-5 control-label"></label>
+            <div class="col-md-5">
+              <button name="file" type="submit" value="Submit" class="btn btn-warning" id="btn-predict">Bring Results <span></span></button>
+            </div>
 
+          </fieldset>
         </form>
   
   
