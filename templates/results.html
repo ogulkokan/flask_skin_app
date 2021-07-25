@@ -17,13 +17,14 @@
 
 
 
-  {% if result[2] == 'Safe' %}
+  {% if outputs[1] == 'Safe' %}
 
-  <p><h2>Final Risk Assesment is  <span style="color:green;">{{result[2]}}</span></h2></p>
-  <p>{{result[3]}}</p>
+  <p><h2>Final Risk Assesment is  <span style="color:green;">{{outputs[1]}}</span></h2></p>
+  <p>{{outputs[2]}}</p>
+  <p>{{ outputs }}</p>
   {% else %}
-  <p><h2>Final Risk Assesment is  <span style="color: red;">{{result[2]}}</span></h2></p>
-  <p>{{result[3]}}</p>
+  <p><h2>Final Risk Assesment is  <span style="color: red;">{{outputs[1]}}</span></h2></p>
+  <p>{{outputs[2]}}</p>
 
   {% endif %}
 
