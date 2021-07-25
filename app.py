@@ -1,3 +1,6 @@
+"""
+Complex ensemble approach
+"""
 import numpy as np
 from flask import Flask, request, jsonify, render_template, flash
 import pickle
