@@ -19,19 +19,14 @@ import sys
 from config import *
 
 import pandas as pd
-from sklearn.preprocessing import PowerTransformer
-from sklearn.decomposition import PCA
-
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # load models
 module = hub.KerasLayer("./models/bit_s-r50x1_1")
-rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
-svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
-
+svm_model =  pickle.load(open('./models/model_svc_feature_2021.pkl', 'rb'))
+rf_model =  pickle.load(open('./models/model_rf_meta_2021.pkl', 'rb'))
 
 # load image feature dataset
 base_dir = './models/'
@@ -49,16 +44,11 @@ target_binary = features_PAD['type'].values
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-
-        #print(request.form.get('age'))    ## this one check if age exist and return none if empyt
-        print(request.form['diameter'])
         if 'file' not in request.files:
             print('Not a valid Code', file=sys.stderr)
             return render_template('index.html', msg='No file selected')
-
         else:
             f = request.files['file']
-
             # Save the file to ./uploads
             basepath = os.path.dirname(__file__)
             file_path = os.path.join(
@@ -66,21 +56,22 @@ def index():
             f.save(file_path)
             print('model saved to uploads file')
 
-
-            # load image and resize to 224 x 224
+            ##------------For image feature extraction test------------------
             original_image = load_img(file_path, target_size=(224, 224))
             numpy_image = img_to_array(original_image)
 
-            print(numpy_image.shape)
+            # print(numpy_image.shape)
             image_batch = np.expand_dims(numpy_image, axis=0)
 
             #images = ...  # A batch of images with shape [batch_size, height, width, 3].
-            #module = hub.KerasLayer("./models/bit_s-r50x1_1")
-            features = module(image_batch)  # Features with shape [batch_size, 2048]. 
-            print(features)
+            image_features = module(image_batch)  # Features with shape [batch_size, 2048]. 
+
+            prediction_image_features = svm_model.predict_proba(image_features)
+
+            print("Feature prediction:", prediction_image_features)
 
 
-            # Get Clinical informations from the user
+            ##------------Get Clinical Informations------------------
             age = request.form['age']
             gender = request.form['gender']
             h_diameter = request.form['diameter'] # horizontal diameter
@@ -97,86 +88,29 @@ def index():
             bleeding = request.form['bleeding']
             elevation = request.form['elevation']
 
-
             int_features = [age, gender, h_diameter, v_diameter, smoke, alcohol, cancer1, cancer2, fitspatrick,
                             itching, hurting, growing, changing, bleeding, elevation]
             final_features = [np.array(int_features)]
+  
+            prediction_meta_features = rf_model.predict_proba(final_features)
 
-            # load Random Forest model and make prediction
-            # rf_model =  pickle.load(open('./models/rf_model.pkl', 'rb'))
-            prediction = rf_model.predict(final_features)
-
-           
-            image_features = features
-    
-            # scale image features
-            yj = PowerTransformer(method = 'yeo-johnson')
-            X_train_feature_yj = yj.fit_transform(training_features)
-
-            # apply PCA
-            pca = PCA(433)
+            print('Clinical meta data feature prediction', prediction_meta_features)
             
-            # Concat image features and clinical features 
-            X_train_feature_yj_pca = pca.fit_transform(X_train_feature_yj)
-            X_train_feature_yj_pca_fusion = np.concatenate((X_train_feature_yj_pca, encoded_clinical_meta), axis=1)
-
-            X_test_feature_yj = yj.transform(image_features)
-            X_test_feature_yj_pca = pca.transform(X_test_feature_yj)
-            X_test_feature_yj_pca_fusion = np.concatenate((X_test_feature_yj_pca, final_features), axis=1)
-
-            # load svm model and predict results
-            #svm_model =  pickle.load(open('./models/svm_model.pkl', 'rb'))
-            prediction_svm = svm_model.predict(X_test_feature_yj_pca_fusion)
-            print(X_test_feature_yj_pca_fusion.shape)
-            print('svm_prediction', prediction_svm)
-
+            ##------------Soft Voting --------------------------------
+            prediction_image_features = np.asarray(prediction_image_features)
+            prediction_meta_features_np_array = np.asarray(prediction_meta_features)
             
-            # Ensemble method Soft voting
+            soft_voting_proba = np.mean(np.array([ prediction_image_features, prediction_meta_features_np_array ]), axis=0 )
+            soft_voting_class = np.argmax(soft_voting_proba, axis=1)
+            print("FINAL_RESULT", soft_voting_class)
 
-            def fit_multiple_estimators(classifiers, X_list, y, sample_weights = None):
-                # Convert the labels `y` using LabelEncoder, because the predict method is using index-based pointers
-                # which will be converted back to original data later.
-                #le_ = LabelEncoder()
-                #le_.fit(y)
-                #transformed_y = le_.transform(y)
-                
-                # Fit all estimators with their respective feature arrays
-                estimators_ = [clf.fit(X, y) if sample_weights is None else clf.fit(X, y, sample_weights) for clf, X, y in zip([clf for _, clf in classifiers], X_list, y)]
-
-                return estimators_
-
-
-            def predict_from_multiple_estimator(estimators, X_list, weights = None):
-
-                # Predict 'soft' voting with probabilities
-
-                pred1 = np.asarray([clf.predict_proba(X) for clf, X in zip(estimators, X_list)])
-                pred2 = np.average(pred1, axis=0, weights=weights)
-                pred = np.argmax(pred2, axis=1)
-
-                # Convert integer predictions to original labels:
-                return pred, pred2     #label_encoder.inverse_transform(pred)
-
-            X_train_list = [X_train_feature_yj_pca_fusion, encoded_clinical_meta]
-            y_list = [target_multiple, target_multiple]
-
-            X_test_list = [X_test_feature_yj_pca_fusion, final_features]
-
-            # Make sure the number of estimators here are equal to number of different feature datas
-            classifiers = [('svc',  svm_model), ('rf', rf_model)]
-
-            # Get final prediction
-            fitted_estimators = fit_multiple_estimators(classifiers, X_train_list, y_list, sample_weights=None)
-            y_pred, y_pred_proba = predict_from_multiple_estimator(fitted_estimators, X_test_list)
-            print(y_pred, y_pred_proba)
-
-
+            final_result = int(soft_voting_class[0])
 
             """    disease= 0, cancer= 1
             class 0, 3, and 5 is disease
             class 1, 2, and 4 is cancer
             """
-            if y_pred == 0 or 3 or 5:
+            if final_result in (0, 3, 5):
                 prediction = "Safe"
                 color = "green"
                 statement = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer efficitur velit eget tellus pharetra congue. \
@@ -185,7 +119,7 @@ def index():
                 odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ullamcorper lacus ac \
                 libero ultrices, non blandit ipsum vehicula. Suspendisse ultrices congue urna, nec finibus metus. Nullam ex ligula" 
 
-            else:
+            elif final_result is 1 or 2 or 4:
                 prediction = "Dangerous"
                 color = "red"
                 statement = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer efficitur velit eget tellus pharetra congue. \
@@ -194,14 +128,12 @@ def index():
                 odio. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean ullamcorper lacus ac \
                 libero ultrices, non blandit ipsum vehicula. Suspendisse ultrices congue urna, nec finibus metus. Nullam ex ligula" 
 
-            
             # Remove uploaded image after prediction
             print('Deleting File at Path: ' + file_path)
             os.remove(file_path)
             print('Deleting File at Path - Success - ')
 
-
-            return render_template('results.html', result = [y_pred, y_pred_proba, prediction, statement, color])
+            return render_template('results.html', outputs = [final_result, prediction, statement, color])
 
 
     return render_template('index.html')
