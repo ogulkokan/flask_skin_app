@@ -56,7 +56,7 @@ def index():
             f.save(file_path)
             print('model saved to uploads file')
 
-            ##------------For image feature extraction test------------------#
+            ##------------For image feature extraction test------------------
             original_image = load_img(file_path, target_size=(224, 224))
             numpy_image = img_to_array(original_image)
 
@@ -65,13 +65,13 @@ def index():
 
             #images = ...  # A batch of images with shape [batch_size, height, width, 3].
             image_features = module(image_batch)  # Features with shape [batch_size, 2048]. 
-            # print(features)
-            prediction_image_features = svm_model.predict_proba(image_features)
-            # prediction_image_features = np.max(prediction_image_features)
-            print("Feature prediction:", prediction_image_features)
-            ##------------For image feature extraction test END------------------#
 
-            ##------------Get Clinical Informations------------------#
+            prediction_image_features = svm_model.predict_proba(image_features)
+
+            print("Feature prediction:", prediction_image_features)
+
+
+            ##------------Get Clinical Informations------------------
             age = request.form['age']
             gender = request.form['gender']
             h_diameter = request.form['diameter'] # horizontal diameter
@@ -88,19 +88,15 @@ def index():
             bleeding = request.form['bleeding']
             elevation = request.form['elevation']
 
-
             int_features = [age, gender, h_diameter, v_diameter, smoke, alcohol, cancer1, cancer2, fitspatrick,
                             itching, hurting, growing, changing, bleeding, elevation]
             final_features = [np.array(int_features)]
-            #prediction = model.predict(final_features)
-            # print(final_features)
+  
             prediction_meta_features = rf_model.predict_proba(final_features)
 
-            print('############---------------------------#######################')
-            print('Clinical meta data feature prediction')
-            print(prediction_meta_features)
-            print('############---------------------------#######################')
-            ##------------Get Clinical Informations END------------------#
+            print('Clinical meta data feature prediction', prediction_meta_features)
+            
+            ##------------Soft Voting --------------------------------
             prediction_image_features = np.asarray(prediction_image_features)
             prediction_meta_features_np_array = np.asarray(prediction_meta_features)
             
@@ -108,8 +104,6 @@ def index():
             soft_voting_class = np.argmax(soft_voting_proba, axis=1)
             print("FINAL_RESULT", soft_voting_class)
 
-            print('############---------------------------#######################')
-            print('SOFT VOTING TEST')
             final_result = int(soft_voting_class[0])
 
             """    disease= 0, cancer= 1
